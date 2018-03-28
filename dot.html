@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>jqGrid - Ace Admin</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+	<meta charset="utf-8"/>
+	<meta name="description" content="Dynamic tables and grids using jqGrid plugin"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+</head>
+
+<body class="no-skin">
+<div id="main-container">
+	<button v-on:click="btn">start</button>
+	<div>
+		<div id="str1"></div>
+		<div id="str2"></div>
+	</div>
+
+	<!--<div>{{str3}}</div>
+	<div>{{str4}}</div>-->
+
+</div>
+
+</body>
+<style type="text/css">
+	#main-container>div{
+		width: 60px; /*调宽度试功能*/
+		background-color: darkgray;
+		padding-top: 20px;
+		padding-bottom: 10px;
+	}
+	img{
+		width: 20px;
+		height: 20px;
+	}
+	#str2{
+		/*word-wrap: break-word;*/
+	}
+</style>
+<script src="vue.js"></script>
+
+<script>
+  // console.log(Vue)
+  var app = new Vue({
+    el: '#main-container',
+    data: function () {
+      var data = {
+        lineHeight2: 21 * 2,
+        str1: '一二三四五六七八九',
+        str2: '123',
+        str3: '123',
+        str4: '123'
+      }
+      return data
+    },
+    mounted: function () {
+    },
+    methods: {
+      btn: function () {
+        var lineHeight2 = 25 * 2 // 行高 * 行数
+        var str1 = '一二三四五六七八九'
+        // var str2 = '一二三四五六七八九'
+        var str2 = '1111111111111111111111'
+        // var str2 = '一<img src="./wa.png">二三四五六七八九'
+        // str1 = '<img src="./wa.png">'
+        var str3 = '123'
+        var maxMark = 0 // 等于str1.length - 1，可直接用做序号，二分法上限
+        var minMark = 0
+        var wN = 0
+
+        /** 不带标签的省略号函数 */
+        /*var el = document.getElementById('str1')
+        for (var i = 0; i < str1.length; i++) {
+          var a // 是否是img的标志位
+          var resNum
+          var res
+          if (str1[i] === '<' && str1.slice(i + 1, i + 5) === 'img ') {
+            // i = i+1
+            res = str1.slice(i)
+            // console.log('res', res)
+            resNum = res.indexOf('>')
+            // console.log(resNum.);
+            a = 1
+            wordNoteList.push({index: i, num: resNum})
+            i = i + resNum
+            wN++
+          } else {
+            wN++
+          }
+        }
+        console.log('wN', wN)
+        maxMark = wN
+        var loopFun = function () {
+          if (Math.floor((maxMark - minMark) / 2) === 1 || Math.floor((maxMark - minMark) / 2) === 0) {
+            // 等于1，二分结束
+            el.innerHTML = str1.substr(0, Math.floor((maxMark + minMark) / 2)) + '...'
+            if (el.offsetHeight > lineHeight2) {
+              el.innerHTML = str1.slice(0, Math.floor((maxMark + minMark) / 2) -1 ) + '...'
+              // return cMark - 1
+            } else {
+              el.innerHTML = str1.slice(0, Math.floor(maxMark + minMark) / 2) + '...'
+              // return cMark
+            }
+          } else {
+            el.innerHTML = str1.substr(0, Math.floor((maxMark + minMark) / 2)) + '...'
+            if (el.offsetHeight > lineHeight2) {
+              maxMark = Math.floor((maxMark + minMark) / 2)
+              loopFun()
+            } else {
+              minMark = Math.floor((maxMark + minMark) / 2)
+              loopFun()
+            }
+          }
+        }
+        el.innerHTML = str1.substr(0, maxMark) + '...'
+        if (el.offsetHeight > lineHeight2) {
+          loopFun()
+        } else {
+          // end 第一次小了什么都不用做
+          el.innerHTML = str1.substr(0, maxMark)
+        }*/
+
+        /** 带标签的省略号函数 */
+        var el2 = document.getElementById('str2')
+        el2.style.height = 'auto' // 修改样式，是行高会自动变化。可以用父元素设定宽度
+        el2.style.width = 'auto'
+        el2.style.maxHeight = 'none'
+        el2.style.wordWrap = 'break-word' // 打断连续字符或者数字
+
+		// 计算总字数
+        for (var i = 0; i < str2.length; i++) {
+          var resNum
+          var res
+          if (str2[i] === '<' && str2.slice(i + 1, i + 5) === 'img ') {
+            // i = i+1
+            res = str2.slice(i)
+            // console.log('res', res)
+            resNum = res.indexOf('>')
+            // console.log(resNum.);
+            // wordNoteList.push({index: i, num: resNum})
+            i = i + resNum
+            wN++
+          } else {
+            wN++
+          }
+        }
+        // console.log('wN', wN)
+        maxMark = wN - 1
+
+        // 带标签的截取
+        var cut =function (end) {
+          var wNC = 0 // 位数，一个标签算一位
+          console.log('cutEnd', end)
+          for (var l = 0; l < str2.length; l++) {
+            var resNumC
+            var resC
+            if (str2[l] === '<' && str2.slice(l + 1, l + 5) === 'img ') { // 是标签
+              resC = str2.slice(l)
+              // console.log('res', res)
+              resNumC = resC.indexOf('>') // 得到标签禅读
+              l = l + resNumC // 是标签，加上标签的长度
+              wNC++ // 位数加一位
+            } else { // 是普通文字
+              wNC++
+              // console.log('str2.slice(0, l)', str2.slice(0, l), 'l', l, 'str2',str2, 'wN', wNC)
+              // return str2.slice(0, l) + '...'
+            }
+            // console.log('wNC', wNC, 'end', end)
+
+            if (wNC == end + 1) { // 截取的字数达到需要的字数时，返回结果
+              console.log('str2.slice(0, l)', str2.slice(0, l+1), 'wN', wNC)
+              return (str2.slice(0, l + 1) + '...')
+            }
+          }
+        }
+
+		// 递归二分法
+        var loopFun = function () {
+          console.log('loopFunStar:wN', wN, 'maxMark', maxMark, 'minMark', minMark)
+
+          if (Math.floor((maxMark - minMark) / 2) === 1 || Math.floor((maxMark - minMark) / 2) === 0) { // max min 接近跳出递归，得到结果
+            // 等于1，二分结束
+            el2.innerHTML = cut(Math.floor((maxMark + minMark) / 2)) // 放进div
+			console.log('last-el2.innerHTML', el2.innerHTML)
+            if (window.getComputedStyle(el2).height.slice(0, window.getComputedStyle(el2).height.length - 2) > lineHeight2) { // 检查div高度和行高*行数的关系，判断是否超过n行
+			  // window.getComputedStyle(el2).height.slice(0, window.getComputedStyle(el2).height.length 是实际高度，不用考虑元素margin padding，可以直接用。得到的带px，所以要截掉
+              console.log('last1', Math.floor((maxMark + minMark) / 2) -1)
+              el2.innerHTML = cut(Math.floor((maxMark + minMark) / 2) -1 ) // 超过，取小一位的截取
+            } else {
+              console.log('last2', Math.floor((maxMark + minMark) / 2), cut(Math.floor(maxMark + minMark) / 2))
+              el2.innerHTML = cut(Math.floor((maxMark + minMark) / 2)) // 未超过，取当前位的截取
+            }
+          } else { // 二分法，递归
+            el2.innerHTML = cut(Math.floor((maxMark + minMark) / 2))
+            console.log('window.getComputedStyle(el2).height', window.getComputedStyle(el2).height , 'lineHeight2', lineHeight2)
+            if (window.getComputedStyle(el2).height.slice(0, window.getComputedStyle(el2).height.length - 2) > lineHeight2) {
+              maxMark = Math.floor((maxMark + minMark) / 2) // 超过中间值给上限
+              loopFun()
+            } else {
+              minMark = Math.floor((maxMark + minMark) / 2) // 超过中间值给下限
+			  console.log('set minMark', minMark)
+              loopFun()
+            }
+          }
+        }
+
+        el2.innerHTML = str2 + '...'
+        if (window.getComputedStyle(el2).height.slice(0, window.getComputedStyle(el2).height.length - 2) > lineHeight2) {
+          loopFun()
+        } else {
+          // end 第一次小了什么都不用做
+          el2.innerHTML = str2
+        }
+      },
+
+	}
+  })
+</script>
+
+</html>
